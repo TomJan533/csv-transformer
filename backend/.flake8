@@ -1,0 +1,24 @@
+[flake8]
+# Maximum allowed line length (default is 79)
+max-line-length = 91
+
+# Ignore certain error codes (e.g., E501 is line too long)
+; ignore = E203, E266, E501, W503
+
+# Exclude files and directories from linting (e.g., virtualenv, build artifacts)
+exclude = .git, __pycache__, venv, env, build, dist
+
+# Set specific rules for line breaks around binary operators (optional)
+; extend-ignore = E203, W503
+
+# Show the source of the error
+; show-source = true
+
+# Count errors and warnings
+count = true
+
+# Specify maximum allowed complexity for code (useful for maintaining simpler code)
+max-complexity = 10
+
+# Enable specific select error codes (optional)
+select = B,C,E,F,W,T4,B9

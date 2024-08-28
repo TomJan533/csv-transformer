@@ -1,1 +1,1 @@
-from .health_check import HealthCheckAPIView
+from .health_check import HealthCheckAPIView  # noqa: F401

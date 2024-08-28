@@ -1,6 +1,5 @@
-from unittest.mock import patch
-from rest_framework.test import APITestCase
 from django.urls import reverse
+from rest_framework.test import APITestCase
 
 
 class HealthCheckAPITestCase(APITestCase):
@@ -9,10 +8,9 @@ class HealthCheckAPITestCase(APITestCase):
         """
         Ensure the health check endpoint returns a 200 status and 'healthy' message.
         """
-        url = reverse('health-check')
-        
+        url = reverse("health-check")
+
         response = self.client.get(url)
-        
+
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"status": "healthy"})
-
