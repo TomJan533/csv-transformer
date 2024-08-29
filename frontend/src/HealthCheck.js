@@ -5,7 +5,7 @@ const HealthCheck = () => {
 
   useEffect(() => {
     // Fetch health check from the backend
-    fetch('/api/health-check/')
+    fetch('http://localhost:8000/api/health-check/') // TODO: replace with app config
       .then((response) => response.json())
       .then((data) => setStatus(data))
       .catch((error) => {
