@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import CSVRecord
+from .models import CSVFile, CSVRecord
 
 
 class CSVRecordSerializer(serializers.ModelSerializer):
@@ -24,3 +24,9 @@ class CSVRecordSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # Override the create method if you need to customize object creation
         return super().create(validated_data)
+
+
+class CSVFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CSVFile
+        fields = ["id", "file_name", "file_hash", "created_at"]

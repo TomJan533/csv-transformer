@@ -2,6 +2,7 @@ import './App.css';
 import React from 'react';
 import HealthCheck from './HealthCheck.js';
 import CSVUpload from './CSVUpload.js';
+import CSVList from './CSVList.js';
 
 function App() {
   return (
@@ -11,6 +12,9 @@ function App() {
       </div>
       <div>
         <CSVUpload />
+      </div>
+      <div>
+        <CSVList />
       </div>
     </div>
   );
