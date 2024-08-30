@@ -14,9 +14,3 @@ class HealthCheckAPITestCase(APITestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data, {"status": "healthy"})
-
-    def test_pre_commit(self):
-        """
-        test pre-commit
-        """
-        pass

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 
+const apiUrl = process.env.REACT_APP_API_URL;
+
 const HealthCheck = () => {
   const [status, setStatus] = useState(null);
 
   useEffect(() => {
     // Fetch health check from the backend
-    fetch('http://localhost:8000/api/health-check/') // TODO: replace with app config
+    fetch(`${apiUrl}/health-check/`)
       .then((response) => response.json())
       .then((data) => setStatus(data))
       .catch((error) => {
