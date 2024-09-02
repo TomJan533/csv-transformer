@@ -1,5 +1,6 @@
 import csv
 import hashlib
+import logging
 
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -9,6 +10,8 @@ from rest_framework.views import APIView
 
 from api.models import CSVFile, CSVRecord
 from api.serializers import CSVRecordSerializer
+
+logger = logging.getLogger(__name__)
 
 
 class CSVUploadView(APIView):
@@ -45,7 +48,11 @@ class CSVUploadView(APIView):
                 csv_file_instance.save()
 
                 # Decode and process the file as before
-                decoded_file = file.read().decode("utf-8").splitlines()
+                file.seek(0)
+                content = file.read()
+
+                decoded_file = content.decode("utf-8").splitlines()
+
                 reader = csv.DictReader(decoded_file)
 
                 records = []
@@ -63,10 +70,12 @@ class CSVUploadView(APIView):
                     raise ValidationError(errors)
 
         except ValidationError as e:
+            logger.error(f"ValidationError: {e}")
             return Response(
                 {"errors": e.message_dict}, status=status.HTTP_400_BAD_REQUEST
             )
         except Exception as e:
+            logger.error(f"Exception: {e}")
             return Response(
                 {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
