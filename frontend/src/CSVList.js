@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
-function CSVList() {
+function CSVList({ onFileSelect }) {
   const [csvFiles, setCsvFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -40,6 +40,7 @@ function CSVList() {
       .then(data => {
         setSelectedFileContent(data);
         setLoading(false);
+        onFileSelect(data, fileId); // Notify App component with both content and fileId
       })
       .catch(error => {
         setError(error.message);
