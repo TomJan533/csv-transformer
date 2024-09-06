@@ -62,18 +62,24 @@ class CSVUploadView(APIView):
                         errors.append(serializer.errors)
 
                 if errors:
-                    raise ValidationError({"detail": errors})  # Wrap errors in a dictionary
+                    raise ValidationError(
+                        {"detail": errors}
+                    )  # Wrap errors in a dictionary
 
         except ValidationError as e:
             logger.error(f"ValidationError: {e}")
             if hasattr(e, "message_dict"):
-                return Response({"errors": e.message_dict}, status=status.HTTP_400_BAD_REQUEST)
+                return Response(
+                    {"errors": e.message_dict}, status=status.HTTP_400_BAD_REQUEST
+                )
             else:
                 return Response({"errors": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
             logger.error(f"Exception: {e}")
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
         return Response({"records": records}, status=status.HTTP_201_CREATED)
 

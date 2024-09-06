@@ -1,8 +1,13 @@
 from django.contrib import admin
 from django.urls import path
 
-from api.views import (CSVEnrichmentView, CSVFileContentView, CSVFileListView,
-                       CSVUploadView, HealthCheckAPIView)
+from api.views import (
+    CSVEnrichmentView,
+    CSVFileContentView,
+    CSVFileListView,
+    CSVUploadView,
+    HealthCheckAPIView,
+)
 
 urlpatterns = [
     path("admin/", admin.site.urls),

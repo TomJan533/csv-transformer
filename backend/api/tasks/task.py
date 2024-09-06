@@ -5,7 +5,8 @@ from multiprocessing import Manager, Pool
 import requests
 from celery import shared_task
 
-from api.models import CSVFile, CSVRecord, GenericData
+from api.models import GenericData
+from api.services import CSVFileService
 
 logger = logging.getLogger(__name__)
 
@@ -115,12 +116,8 @@ def process_data(data, request):
         logger.warning("No valid records to save.")
         print("No valid records to save.")
 
-    # Create enhanced, joined file
-    # Get an instance of CSVFile
-    csv_file_instance = CSVFile.objects.get(pk=file_id)
-
-    # Call the copy method
-    enhanced_file = csv_file_instance.copy(file_id, action_id)
+    # Create enhanced file
+    enhanced_file = CSVFileService.copy_file(file_id, action_id)
     logger.info(
         f"Successfully saved {enhanced_file.file_name} records to the database."
     )

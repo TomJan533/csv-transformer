@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import CSVFile, CSVRecord
+from api.models import CSVRecord
 
 
 class CSVRecordSerializer(serializers.ModelSerializer):
@@ -32,9 +32,3 @@ class CSVRecordSerializer(serializers.ModelSerializer):
             representation.update(instance.data)
 
         return representation
-
-
-class CSVFileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CSVFile
-        fields = ["id", "file_name", "file_hash", "created_at"]
