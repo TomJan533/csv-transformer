@@ -22,8 +22,16 @@ class CSVRecordSerializer(serializers.ModelSerializer):
         ]  # The csv_file is automatically set in the view, so it's read-only
 
     def create(self, validated_data):
-        # Override the create method if you need to customize object creation
         return super().create(validated_data)
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+
+        # Assuming 'data' is a dictionary in the instance, normalize it
+        if isinstance(instance.data, dict):
+            representation.update(instance.data)
+
+        return representation
 
 
 class CSVFileSerializer(serializers.ModelSerializer):

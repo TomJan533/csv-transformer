@@ -16,6 +16,7 @@ psycopg2-binary = "^2.9.9"
 redis = "^5.0.8"
 django-cors-headers = "^4.4.0"
 python-decouple = "^3.8"
+requests = "^2.32.3"
 
 
 [tool.poetry.group.dev.dependencies]

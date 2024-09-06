@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 from decouple import config
@@ -138,8 +139,6 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-import os
-
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -155,30 +154,54 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "DEBUG",
+            "level": "INFO",  # Adjust this level as needed
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
     },
     "root": {
         "handlers": ["console"],
-        "level": "DEBUG",
+        "level": "INFO",  # Adjust this level as needed
     },
     "loggers": {
         "django": {
             "handlers": ["console"],
-            "level": os.getenv("DJANGO_LOG_LEVEL", "DEBUG"),
+            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),  # Default to INFO
             "propagate": False,
         },
         "django.request": {
             "handlers": ["console"],
-            "level": "DEBUG",
+            "level": "INFO",  # Adjust this level as needed
             "propagate": False,
         },
         "myapp": {  # Replace 'myapp' with your app's name
             "handlers": ["console"],
-            "level": "DEBUG",
+            "level": "DEBUG",  # Debug level for your app
+            "propagate": False,
+        },
+        # Example to suppress third-party libraries' debug logs
+        "psycopg2": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "billiard": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": False,
+        },
+        "django.db.backends": {
+            "handlers": ["console"],
+            "level": "WARNING",
             "propagate": False,
         },
     },
 }
+
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
+
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TIMEZONE = "UTC"

@@ -12,6 +12,8 @@ services:
       - app-network
     depends_on:
       - db
+      - redis
+      - celery
 
   frontend:
     build:
@@ -36,6 +38,39 @@ services:
     ports:
       - "5432:5432"
       - "5433:5433"
+
+  redis:
+    image: redis:latest
+    networks:
+      - app-network
+
+  celery:
+    build:
+      context: ./backend
+    command: celery -A api worker --loglevel=info
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+    networks:
+      - app-network
+    depends_on:
+      - db
+      - redis
+
+  beat:
+    build:
+      context: ./backend
+    command: celery -A api beat --loglevel=info
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+    networks:
+      - app-network
+    depends_on:
+      - db
+      - redis
 
 volumes:
   postgres_data:

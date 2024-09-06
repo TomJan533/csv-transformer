@@ -4,12 +4,15 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from api.tasks import fetch_and_process_data
+
 logger = logging.getLogger(__name__)
 
 
 class CSVEnrichmentView(APIView):
     def post(self, request, *args, **kwargs):
         # Extract data from request
+        # TODO: validate request data
         file_id = request.data.get("fileId")
         selected_column = request.data.get("selectedColumn")
         url = request.data.get("url")
@@ -25,6 +28,8 @@ class CSVEnrichmentView(APIView):
             return Response(
                 {"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST
             )
+
+        fetch_and_process_data(request)
 
         # Respond with success
         return Response(
