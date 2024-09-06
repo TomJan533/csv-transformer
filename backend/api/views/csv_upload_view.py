@@ -29,10 +29,8 @@ class CSVUploadView(APIView):
                 {"error": "This is not a CSV file"}, status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Calculate the file hash
         file_hash = self.calculate_hash(file)
 
-        # Check if a file with the same hash already exists
         if CSVFile.objects.filter(file_hash=file_hash).exists():
             return Response(
                 {"error": "This file already exists."},
@@ -43,14 +41,11 @@ class CSVUploadView(APIView):
 
         try:
             with transaction.atomic():
-                # Create and save the CSVFile instance
                 csv_file_instance = CSVFile(file_name=file.name, file_hash=file_hash)
                 csv_file_instance.save()
 
-                # Decode and process the file as before
                 file.seek(0)
                 content = file.read()
-
                 decoded_file = content.decode("utf-8").splitlines()
 
                 reader = csv.DictReader(decoded_file)
@@ -67,18 +62,18 @@ class CSVUploadView(APIView):
                         errors.append(serializer.errors)
 
                 if errors:
-                    raise ValidationError(errors)
+                    raise ValidationError({"detail": errors})  # Wrap errors in a dictionary
 
         except ValidationError as e:
             logger.error(f"ValidationError: {e}")
-            return Response(
-                {"errors": e.message_dict}, status=status.HTTP_400_BAD_REQUEST
-            )
+            if hasattr(e, "message_dict"):
+                return Response({"errors": e.message_dict}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({"errors": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
         except Exception as e:
             logger.error(f"Exception: {e}")
-            return Response(
-                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return Response({"records": records}, status=status.HTTP_201_CREATED)
 
