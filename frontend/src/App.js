@@ -1,41 +1,18 @@
-import React, { useState } from 'react';
-import './App.css';
-import HealthCheck from './HealthCheck.js';
-import CSVUpload from './CSVUpload.js';
-import CSVList from './CSVList.js';
-import FileEnrichment from './FileEnrichment.js';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './pages/Home/Home.js';
+import HealthCheck from './pages/HealthCheck/HealthCheck.js';
 
-function App() {
-  const [selectedFileContent, setSelectedFileContent] = useState(null);
-  const [selectedFileId, setSelectedFileId] = useState(null);
-
-  const handleFileSelect = (fileContent, fileId) => {
-    console.log('Selected File ID:', fileId); // Debugging
-    setSelectedFileContent(fileContent);
-    setSelectedFileId(fileId);
-  };
-
+const App = () => {
   return (
-    <div className="App">
-      <div>
-        <HealthCheck />
-      </div>
-      <div>
-        <CSVUpload />
-      </div>
-      <div>
-        <CSVList onFileSelect={handleFileSelect} />
-      </div>
-      {selectedFileContent && (
-        <div>
-          <FileEnrichment
-            selectedFileContent={selectedFileContent}
-            fileId={selectedFileId}
-          />
-        </div>
-      )}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/health-check" element={<HealthCheck />} />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
