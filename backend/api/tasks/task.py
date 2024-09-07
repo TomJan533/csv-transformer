@@ -1,9 +1,8 @@
 import logging
 import uuid
-from multiprocessing import Manager, Pool
 
 import requests
-from celery import shared_task
+from celery import chord, group, shared_task
 
 from api.models import GenericData
 from api.services import CSVFileService
@@ -11,114 +10,77 @@ from api.services import CSVFileService
 logger = logging.getLogger(__name__)
 
 
-def fetch_data_from_url(url, page_number, per_page, return_dict):
+@shared_task
+def fetch_page_data(url, page_number, per_page):
     try:
         response = requests.get(f"{url}?_page={page_number}&_limit={per_page}")
         response.raise_for_status()
-        return_dict[page_number] = response.json()
         logger.info(f"Fetched page {page_number}")
-        print(f"Fetched page {page_number}")
+        return response.json()
     except requests.RequestException as e:
         logger.error(f"Request failed for page {page_number}: {e}")
-        print(f"Request failed for page {page_number}: {e}")
-        return_dict[page_number] = None
+        return []
 
 
 @shared_task
-def fetch_and_process_data(request):
-
-    # Generate ActionId for the request
-    action_id = uuid.uuid4()
-    logger.info(f"ActionId: {action_id}")
-    print(f"ActionId: {action_id}")
-    request.data["action_id"] = str(action_id)
-
-    # Initial request to get the total count of records
-    url = request.data.get("url")
-
-    try:
-        initial_response = requests.get(f"{url}?_page=1&_limit=1")
-        initial_response.raise_for_status()
-    except requests.RequestException as e:
-        logger.error(f"Failed to access URL: {url}: {e}")
-        print(f"Failed to access URL: {url}: {e}")
-        return
-
-    total_count = int(initial_response.headers.get("X-Total-Count", 0))
-    per_page = 10  # Adjust based on API's per-page limit
-    total_pages = (total_count // per_page) + (1 if total_count % per_page else 0)
-
-    logger.info(f"Total records to fetch: {total_count}, Total pages: {total_pages}")
-    print(f"Total records to fetch: {total_count}, Total pages: {total_pages}")
-
-    # Using multiprocessing to fetch data concurrently
-    manager = Manager()
-    return_dict = manager.dict()
-
-    with Pool(processes=10) as pool:  # Adjust the number of processes
-        pool.starmap(
-            fetch_data_from_url,
-            [(url, page, per_page, return_dict) for page in range(1, total_pages + 1)],
-        )
-
+def process_fetched_data(
+    results, file_id, selected_column, second_dropdown_value, action_id
+):
+    """
+    Process the fetched data, save to the database, and create an enhanced file.
+    """
     all_data = []
-    for page in range(1, total_pages + 1):
-        data = return_dict.get(page)
-        if data:
-            all_data.extend(data)
-        else:
-            logger.warning(f"No data returned for page {page}")
-            print(f"No data returned for page {page}")
+    for result in results:
+        all_data.extend(result)
 
-    logger.info(f"Fetched a total of {len(all_data)} records")
-    print(f"Fetched a total of {len(all_data)} records")
-
-    # Process all_data as needed
-    process_data(all_data, request)
-
-
-def process_data(data, request):
-    """
-    Processes and saves the data to the GenericData model.
-
-    Args:
-        data (list): List of records to process and save.
-        request (object): The request object from the view.
-    """
-    url = request.data.get("url")
-    file_id = request.data.get("fileId")
-    selected_column = request.data.get("selectedColumn")
-    second_dropdown_value = request.data.get("secondDropdownValue")
-    action_id = request.data.get("action_id")
-
-    logger.info(f"Processing {len(data)} records from endpoint {url}")
-    print(f"Processing {len(data)} records from endpoint {url}")
+    logger.info(f"Processing {len(all_data)} records.")
 
     # Prepare records for bulk creation
-    records = []
-    for item in data:
-        records.append(
-            GenericData(
-                action_id=action_id,
-                file_id=file_id,
-                selected_column=selected_column,
-                second_dropdown_value=second_dropdown_value,
-                data=item,
-            )
+    records = [
+        GenericData(
+            action_id=action_id,
+            file_id=file_id,
+            selected_column=selected_column,
+            second_dropdown_value=second_dropdown_value,
+            data=item,
         )
+        for item in all_data
+    ]
 
-    # Bulk create or update records
-    if records:
-        GenericData.objects.bulk_create(records, ignore_conflicts=True)
-        logger.info(f"Successfully saved {len(records)} records to the database.")
-        print(f"Successfully saved {len(records)} records to the database.")
-    else:
-        logger.warning("No valid records to save.")
-        print("No valid records to save.")
+    GenericData.objects.bulk_create(records, ignore_conflicts=True)
+    logger.info(f"Successfully saved {len(records)} records to the database.")
 
     # Create enhanced file
     enhanced_file = CSVFileService.copy_file(file_id, action_id)
-    logger.info(
-        f"Successfully saved {enhanced_file.file_name} records to the database."
+    logger.info(f"Enhanced file {enhanced_file.file_name} created.")
+    return {"file_name": enhanced_file.file_name}
+
+
+@shared_task
+def fetch_and_process_data(file_id, selected_column, url, second_dropdown_value):
+    action_id = str(uuid.uuid4())
+    logger.info(f"Generated action_id {action_id}")
+
+    try:
+        # Get the total number of records
+        initial_response = requests.get(f"{url}?_page=1&_limit=1")
+        initial_response.raise_for_status()
+        total_count = int(initial_response.headers.get("X-Total-Count", 0))
+        per_page = 10  # Adjust as necessary
+        total_pages = (total_count // per_page) + (1 if total_count % per_page else 0)
+        logger.info(f"Total records: {total_count}, Total pages: {total_pages}")
+    except requests.RequestException as e:
+        logger.error(f"Failed to access URL {url}: {e}")
+        return
+
+    # Create a Celery group of tasks for fetching each page
+    fetch_tasks = [
+        fetch_page_data.s(url, page, per_page) for page in range(1, total_pages + 1)
+    ]
+
+    # Use a Celery chord to process the data after fetching all pages
+    chord(fetch_tasks)(
+        process_fetched_data.s(
+            file_id, selected_column, second_dropdown_value, action_id
+        )
     )
-    print(f"Successfully saved {enhanced_file.file_name} records to the database.")

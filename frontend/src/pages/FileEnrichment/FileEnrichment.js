@@ -27,12 +27,12 @@ function FileEnrichment() {
 
   useEffect(() => {
     if (fileId) {
-      fetch(`${apiUrl}/csv-files/${fileId}/`) // Fetch all data from the CSV
+      fetch(`${apiUrl}/csv-files/${fileId}/?_page=1&_limit=1`)
         .then(response => response.json())
         .then(data => {
-          if (Array.isArray(data) && data.length > 0) {
-            const cols = Object.keys(data[0]); // Extract columns from the first row
-            setColumns(cols); // Set the extracted columns
+          if (Array.isArray(data.results) && data.results.length > 0) {
+            const cols = Object.keys(data.results[0]); // Extract columns from the first row
+            setColumns(cols);
           } else {
             setError('Error: No data found for the file.');
           }

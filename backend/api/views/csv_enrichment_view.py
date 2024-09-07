@@ -29,7 +29,9 @@ class CSVEnrichmentView(APIView):
                 {"error": "Missing required fields"}, status=status.HTTP_400_BAD_REQUEST
             )
 
-        fetch_and_process_data(request)
+        fetch_and_process_data.delay(
+            file_id, selected_column, url, second_dropdown_value
+        )
 
         # Respond with success
         return Response(
