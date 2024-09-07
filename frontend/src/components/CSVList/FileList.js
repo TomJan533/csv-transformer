@@ -1,7 +1,10 @@
 import React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
+import { useNavigate } from 'react-router-dom';
 
 const FileList = ({ csvFiles, handleFileClick, selectionModel, setSelectionModel }) => {
+  const navigate = useNavigate(); // useNavigate hook for redirection
+
   const fileColumns = [
     { field: 'file_name', headerName: 'File Name', width: 300 },
     {
@@ -16,11 +19,41 @@ const FileList = ({ csvFiles, handleFileClick, selectionModel, setSelectionModel
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 150,
+      width: 300, // Adjust width to accommodate both buttons
+      sortable: false,
+      filterable: false,
       renderCell: (params) => (
-        <button onClick={() => handleFileClick(params.id)}>
-          View Content
-        </button>
+        <div>
+          <button 
+            onClick={() => handleFileClick(params.id)}
+            style={{
+              marginRight: '10px',
+              padding: '5px 10px',
+              backgroundColor: '#1976d2',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+            }}
+          >
+            View Content
+          </button>
+          
+          {/* New Button for Navigation to Data Enrichment */}
+          <button
+            onClick={() => navigate(`/file-enrichment/${params.id}`)}
+            style={{
+              padding: '5px 10px',
+              backgroundColor: '#f44336',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '4px',
+              cursor: 'pointer',
+            }}
+          >
+            Data Enrichment
+          </button>
+        </div>
       ),
     },
   ];
@@ -40,10 +73,9 @@ const FileList = ({ csvFiles, handleFileClick, selectionModel, setSelectionModel
         rowsPerPageOptions={[5, 10, 25]}
         selectionModel={selectionModel} // Bind to selectionModel state
         onSelectionModelChange={(newSelection) => {
-          setSelectionModel(newSelection); // Keep track of selected rows
-          if (newSelection.length > 0) {
-            handleFileClick(newSelection[0]); // Fetch content when a new file is selected
-          }
+          const selectedId = newSelection[0];
+          setSelectionModel(newSelection); // Update the selection
+          handleFileClick(selectedId); // Trigger file click for selection
         }}
         onRowClick={(params) => {
           handleFileClick(params.id); // Handle row click to trigger ViewContent action

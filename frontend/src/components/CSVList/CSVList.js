@@ -37,7 +37,7 @@ const CSVList = ({ onFileSelect }) => {
       const firstFileId = csvFiles[0].id;
       handleFileClick(firstFileId); // Automatically "click" the first file
     }
-  }, [csvFiles]); // Only run when csvFiles are loaded
+  });
 
   if (loading && selectedFileId === null) return <Loading />;
   if (error) return <Error message={error} />;

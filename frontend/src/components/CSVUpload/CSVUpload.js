@@ -3,17 +3,17 @@ import React, { useState } from 'react';
 const apiUrl = process.env.REACT_APP_API_URL;
 
 const CSVUpload = () => {
-    const [file, setFile] = useState(null);
     const [message, setMessage] = useState('');
 
-    const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
-    };
+    const handleFileChange = async (e) => {
+        const selectedFile = e.target.files[0];
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+        if (!selectedFile) {
+            return; // If no file is selected, return early
+        }
+
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append('file', selectedFile);
 
         try {
             const response = await fetch(`${apiUrl}/upload-csv/`, {
@@ -35,10 +35,11 @@ const CSVUpload = () => {
 
     return (
         <div>
-            <form onSubmit={handleSubmit}>
-                <input type="file" accept=".csv" onChange={handleFileChange} />
-                <button type="submit">Upload</button>
-            </form>
+            <input 
+                type="file" 
+                accept=".csv" 
+                onChange={handleFileChange}
+            />
             {message && <p>{message}</p>}
         </div>
     );

@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import './Home.css';
 import CSVUpload from '../../components/CSVUpload/CSVUpload.js';
 import CSVList from '../../components/CSVList/CSVList.js';
-import FileEnrichment from './../../FileEnrichment.js';
 
 function Home() {
-  const [selectedFileContent, setSelectedFileContent] = useState(null);
-  const [selectedFileId, setSelectedFileId] = useState(null);
+  const [ setSelectedFileContent] = useState(null);
+  const [ setSelectedFileId] = useState(null);
 
   const handleFileSelect = (fileContent, fileId) => {
     setSelectedFileContent(fileContent);
@@ -22,16 +21,6 @@ function Home() {
       <section className="list-section">
         <CSVList onFileSelect={handleFileSelect} />
       </section>
-
-      {selectedFileContent && (
-        <section className="enrichment-section">
-          <h2>File Enrichment</h2>
-          <FileEnrichment
-            selectedFileContent={selectedFileContent}
-            fileId={selectedFileId}
-          />
-        </section>
-      )}
     </div>
   );
 }
