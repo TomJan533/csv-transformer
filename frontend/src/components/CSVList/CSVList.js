@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { DataGrid } from '@mui/x-data-grid';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -40,7 +41,7 @@ function CSVList({ onFileSelect }) {
       .then(data => {
         setSelectedFileContent(data);
         setLoading(false);
-        onFileSelect(data, fileId); // Notify App component with both content and fileId
+        onFileSelect(data, fileId); // Notify parent component with both content and fileId
       })
       .catch(error => {
         setError(error.message);
@@ -56,40 +57,76 @@ function CSVList({ onFileSelect }) {
     return <div>Error: {error}</div>;
   }
 
+  // Columns for the file list DataGrid
+  const fileColumns = [
+    { field: 'file_name', headerName: 'File Name', width: 300 },
+    {
+      field: 'created_at',
+      headerName: 'Uploaded At',
+      width: 200,
+      valueGetter: (params) => {
+        const date = new Date(params);
+        const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        return formattedDate;
+      },
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 150,
+      renderCell: (params) => (
+        <button onClick={() => handleFileClick(params.row.id)}>
+          View Content
+        </button>
+      ),
+    },
+  ];
+
+  // Rows for the file list DataGrid
+  const fileRows = csvFiles.map((file) => ({
+    id: file.id,
+    file_name: file.file_name,
+    created_at: file.created_at || null,
+  }));
+
+  // Columns and rows for selected file content (CSV file content)
+  const contentColumns = selectedFileContent
+    ? Object.keys(selectedFileContent[0]).map((key) => ({
+        field: key,
+        headerName: key,
+        width: 150,
+      }))
+    : [];
+
+  const contentRows = selectedFileContent
+    ? selectedFileContent.map((row, index) => ({
+        id: index, // A unique ID is required for DataGrid rows
+        ...row,
+      }))
+    : [];
+
   return (
     <div>
-      <h2>CSV Files</h2>
-      <ul>
-        {csvFiles.map(file => (
-          <li key={file.id}>
-            <button onClick={() => handleFileClick(file.id)}>
-              {file.file_name} - Uploaded at: {new Date(file.created_at).toLocaleString()}
-            </button>
-          </li>
-        ))}
-      </ul>
-      
-      {selectedFileContent && selectedFileContent.length > 0 && (
-        <div>
+      {/* File List DataGrid */}
+      <div style={{ height: 400, width: '100%' }}>
+        <DataGrid
+          rows={fileRows}
+          columns={fileColumns}
+          pageSize={5}
+          rowsPerPageOptions={[5, 10, 25]}
+        />
+      </div>
+
+      {/* CSV File Content DataGrid */}
+      {selectedFileContent && (
+        <div style={{ height: 400, width: '100%', marginTop: '20px' }}>
           <h3>File Content for {csvFiles.find(file => file.id === selectedFileId)?.file_name}</h3>
-          <table>
-            <thead>
-              <tr>
-                {Object.keys(selectedFileContent[0]).map(header => (
-                  <th key={header}>{header}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {selectedFileContent.map((row, index) => (
-                <tr key={index}>
-                  {Object.values(row).map((value, idx) => (
-                    <td key={idx}>{value}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <DataGrid
+            rows={contentRows}
+            columns={contentColumns}
+            pageSize={5}
+            rowsPerPageOptions={[5, 10, 25]}
+          />
         </div>
       )}
     </div>
