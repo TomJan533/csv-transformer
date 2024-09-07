@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
-const CSVUpload = () => {
+const CSVUpload = ({ onUploadSuccess }) => { // Accept onUploadSuccess prop
     const [message, setMessage] = useState('');
 
     const handleFileChange = async (e) => {
@@ -25,6 +25,7 @@ const CSVUpload = () => {
 
             if (response.ok) {
                 setMessage('File uploaded successfully!');
+                onUploadSuccess(); // Trigger parent callback to refresh CSV list
             } else {
                 setMessage(`Upload failed: ${result.error}`);
             }

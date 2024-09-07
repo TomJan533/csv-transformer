@@ -3,23 +3,27 @@ import FileList from './FileList.js';
 import Loading from './Loading.js';
 import Error from './Error.js';
 
-const CSVList = ({ onFileSelect }) => {
+const CSVList = ({ onFileSelect, updateTrigger }) => {
   const [csvFiles, setCsvFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_URL}/csv-files/`)
-      .then(response => response.json())
-      .then(data => {
+    const fetchCSVFiles = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/csv-files/`);
+        const data = await response.json();
         setCsvFiles(data);
         setLoading(false);
-      })
-      .catch((error) => {
+      } catch (error) {
         setError(error.message);
         setLoading(false);
-      });
-  }, []);
+      }
+    };
+
+    fetchCSVFiles(); // Fetch the list on component mount and when updateTrigger changes
+  }, [updateTrigger]); // Depend on `updateTrigger` to re-fetch files after a file upload
 
   if (loading) return <Loading />;
   if (error) return <Error message={error} />;
@@ -28,9 +32,8 @@ const CSVList = ({ onFileSelect }) => {
     fetch(`${process.env.REACT_APP_API_URL}/csv-files/${fileId}/?page=1&page_size=10`)
       .then(response => response.json())
       .then(data => {
-        console.dir(data);
-        const totalRows =data.count;
-        onFileSelect(fileId, data.results, totalRows);
+        const totalRows = data.count;
+        onFileSelect(fileId, data.results, totalRows); // Pass fileId, content, and total rows
       })
       .catch((error) => {
         console.error('Error fetching file content:', error);
