@@ -1,24 +1,29 @@
-from rest_framework import generics, status
-from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework import generics
+from rest_framework.pagination import PageNumberPagination
 
 from api.models import CSVFile, CSVRecord
 from api.serializers import CSVRecordSerializer
 
 
-class CSVFileContentView(APIView):
-    def get(self, request, pk):
-        try:
-            csv_file = CSVFile.objects.get(pk=pk)
-            records = CSVRecord.objects.filter(csv_file=csv_file)
-            serializer = CSVRecordSerializer(records, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+# Custom Pagination class (optional)
+class CSVRecordPagination(PageNumberPagination):
+    page_size = 10  # Number of records per page
+    page_size_query_param = (
+        "page_size"  # Allow users to specify page size in the query param
+    )
+    max_page_size = 100  # Limit the maximum number of records per page
 
+
+class CSVFileContentView(generics.ListAPIView):
+    serializer_class = CSVRecordSerializer
+    pagination_class = CSVRecordPagination  # Use the custom pagination class
+
+    def get_queryset(self):
+        pk = self.kwargs["pk"]  # Get the primary key from the URL
+        try:
+            csv_file = CSVFile.objects.get(pk=pk)  # Fetch the CSV file
+            return CSVRecord.objects.filter(
+                csv_file=csv_file
+            )  # Filter records by CSV file
         except CSVFile.DoesNotExist:
-            return Response(
-                {"error": "CSV file not found"}, status=status.HTTP_404_NOT_FOUND
-            )
-        except Exception as e:
-            return Response(
-                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+            return []

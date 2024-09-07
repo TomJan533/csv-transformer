@@ -2,8 +2,8 @@ import React from 'react';
 import { DataGrid } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router-dom';
 
-const FileList = ({ csvFiles, handleFileClick, selectionModel, setSelectionModel }) => {
-  const navigate = useNavigate(); // useNavigate hook for redirection
+const FileList = ({ csvFiles, handleFileClick }) => {
+  const navigate = useNavigate();
 
   const fileColumns = [
     { field: 'file_name', headerName: 'File Name', width: 300 },
@@ -12,14 +12,14 @@ const FileList = ({ csvFiles, handleFileClick, selectionModel, setSelectionModel
       headerName: 'Uploaded At',
       width: 200,
       valueGetter: (params) => {
-        const date = new Date(params);
+        const date = new Date(params.value);
         return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
       },
     },
     {
       field: 'actions',
       headerName: 'Actions',
-      width: 300, // Adjust width to accommodate both buttons
+      width: 300,
       sortable: false,
       filterable: false,
       renderCell: (params) => (
@@ -39,7 +39,7 @@ const FileList = ({ csvFiles, handleFileClick, selectionModel, setSelectionModel
             View Content
           </button>
           
-          {/* New Button for Navigation to Data Enrichment */}
+          {/* Button for Navigation to Data Enrichment */}
           <button
             onClick={() => navigate(`/file-enrichment/${params.id}`)}
             style={{
@@ -61,7 +61,7 @@ const FileList = ({ csvFiles, handleFileClick, selectionModel, setSelectionModel
   const fileRows = csvFiles.map((file) => ({
     id: file.id,
     file_name: file.file_name,
-    created_at: file.created_at || null,
+    created_at: file.created_at,
   }));
 
   return (
@@ -69,16 +69,8 @@ const FileList = ({ csvFiles, handleFileClick, selectionModel, setSelectionModel
       <DataGrid
         rows={fileRows}
         columns={fileColumns}
-        pageSize={5}
-        rowsPerPageOptions={[5, 10, 25]}
-        selectionModel={selectionModel} // Bind to selectionModel state
-        onSelectionModelChange={(newSelection) => {
-          const selectedId = newSelection[0];
-          setSelectionModel(newSelection); // Update the selection
-          handleFileClick(selectedId); // Trigger file click for selection
-        }}
         onRowClick={(params) => {
-          handleFileClick(params.id); // Handle row click to trigger ViewContent action
+          handleFileClick(params.id);
         }}
       />
     </div>
