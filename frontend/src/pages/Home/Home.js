@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import CSVUpload from '../../components/CSVUpload/CSVUpload.js';
 import CSVList from '../../components/CSVList/CSVList.js';
 import FileContent from '../../components/CSVList/FileContent.js';
+import DashboardLayout from '../../DashboardLayout.js';
 
 function Home() {
   const [selectedFileId, setSelectedFileId] = useState(null);
   const [selectedFileContent, setSelectedFileContent] = useState([]);
   const [totalRows, setTotalRows] = useState(0);
-  const [listUpdateTrigger, setListUpdateTrigger] = useState(false); // State to trigger updates
+  const [listUpdateTrigger, setListUpdateTrigger] = useState(false);
 
   const handleFileSelect = (fileId, fileContent, totalRowsFromCSVList) => {
     setSelectedFileId(fileId);
@@ -19,34 +20,32 @@ function Home() {
     setListUpdateTrigger((prev) => !prev); // Toggle to trigger CSV list update
   };
 
-  const fetchPaginatedData = (page, pageSize) => {
-    return fetch(`${process.env.REACT_APP_API_URL}/csv-files/${selectedFileId}/?page=${page}&page_size=${pageSize}`)
-      .then(response => response.json())
-      .then(data => {
-        return {
-          results: data.results,
-          count: data.count,
-        };
-      });
+  const refreshFileList = () => {
+    setListUpdateTrigger((prev) => !prev); // Refresh CSV List when called
   };
 
   return (
-    <div className="Home">
-      <div>
-        <CSVUpload onUploadSuccess={handleUploadSuccess} /> {/* Pass the callback to CSVUpload */}
+    <DashboardLayout>
+      <div className="Home">
+        <div>
+          <CSVUpload onUploadSuccess={handleUploadSuccess} />
+        </div>
+        <div>
+          <CSVList onFileSelect={handleFileSelect} updateTrigger={listUpdateTrigger} refreshFileList={refreshFileList} />
+        </div>
+        <div>
+          {selectedFileId && selectedFileContent.length > 0 && (
+            <FileContent 
+              fetchPaginatedData={(page, pageSize) =>
+                fetch(`${process.env.REACT_APP_API_URL}/csv-files/${selectedFileId}/?page=${page}&page_size=${pageSize}`)
+                  .then((response) => response.json())
+              }
+              totalRows={totalRows}
+            />
+          )}
+        </div>
       </div>
-      <div>
-        <CSVList onFileSelect={handleFileSelect} updateTrigger={listUpdateTrigger} /> {/* Pass updateTrigger */}
-      </div>
-      <div>
-        {selectedFileId && selectedFileContent.length > 0 && (
-          <FileContent 
-            fetchPaginatedData={fetchPaginatedData}
-            totalRows={totalRows}
-          />
-        )}
-      </div>
-    </div>
+    </DashboardLayout>
   );
 }
 

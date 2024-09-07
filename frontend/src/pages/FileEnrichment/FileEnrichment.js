@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { Button } from '@mui/material';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
-// Define the isValidUrl function here
 const isValidUrl = (string) => {
   try {
     new URL(string);
@@ -13,25 +12,29 @@ const isValidUrl = (string) => {
   }
 };
 
-function FileEnrichment() {
-  const { fileId } = useParams(); // Get the fileId from the URL
-  const [columns, setColumns] = useState([]); // State to hold extracted columns
+function FileEnrichment({ fileId, onClose }) {  // Accept `fileId` prop and `onClose` to handle closing modal
+  const [columns, setColumns] = useState([]);
   const [selectedColumn, setSelectedColumn] = useState('');
-  const [inputValue, setInputValue] = useState(''); // This will store the selected URL
+  const [inputValue, setInputValue] = useState('');
   const [secondDropdownOptions, setSecondDropdownOptions] = useState([]);
   const [secondDropdownValue, setSecondDropdownValue] = useState('');
   const [responsePreview, setResponsePreview] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(true); // Add state to track submit button status
 
+  // Effect to check if both dropdowns are selected to enable submit button
+  useEffect(() => {
+    setIsSubmitDisabled(!(selectedColumn && secondDropdownValue));
+  }, [selectedColumn, secondDropdownValue]);
 
   useEffect(() => {
     if (fileId) {
       fetch(`${apiUrl}/csv-files/${fileId}/?_page=1&_limit=1`)
         .then(response => response.json())
         .then(data => {
-          if (Array.isArray(data.results) && data.results.length > 0) {
-            const cols = Object.keys(data.results[0]); // Extract columns from the first row
+          if (data.results && Array.isArray(data.results) && data.results.length > 0) {
+            const cols = Object.keys(data.results[0]);
             setColumns(cols);
           } else {
             setError('Error: No data found for the file.');
@@ -48,8 +51,8 @@ function FileEnrichment() {
     setInputValue(selectedUrl);
     setResponsePreview('');
     setError('');
-    setSuccessMessage(''); // Clear success message on input change
-    handleSubmit(selectedUrl); // Automatically run fetch logic when a URL is selected
+    setSuccessMessage('');
+    handleSubmit(selectedUrl);
   };
 
   const handleSubmit = (selectedUrl = inputValue) => {
@@ -111,6 +114,7 @@ function FileEnrichment() {
       .then(data => {
         setSuccessMessage(`Submission successful: ${JSON.stringify(data, null, 2)}`);
         setError('');
+        onClose();  // Close modal after submission
       })
       .catch(err => {
         setError(`Error submitting data: ${err.message}`);
@@ -120,15 +124,13 @@ function FileEnrichment() {
 
   return (
     <div>
-      <h2>File Enrichment for File ID: {fileId}</h2>
-      
-      {/* 1st Row - Endpoint Selection */}
+      {/* URL Selection */}
       <div style={{ marginBottom: '20px' }}>
         <label htmlFor="input">Select Data Source URL:</label>
         <select
           id="input"
           value={inputValue}
-          onChange={handleInputChange} // Trigger handleSubmit when URL is selected
+          onChange={handleInputChange}
           style={{ width: '100%', padding: '10px' }}
         >
           <option value="">-- Select a URL --</option>
@@ -140,8 +142,8 @@ function FileEnrichment() {
           </option>
         </select>
       </div>
-  
-      {/* 2nd Row - Response Preview */}
+
+      {/* Response Preview */}
       <div style={{ marginBottom: '20px', padding: '10px', border: '1px solid #ccc', borderRadius: '5px', backgroundColor: '#f9f9f9' }}>
         <h3>Response Preview</h3>
         {responsePreview ? (
@@ -150,10 +152,9 @@ function FileEnrichment() {
           <p>No response to display</p>
         )}
       </div>
-  
-      {/* 3rd Row - Columns Dropdown and Second Dropdown */}
+
+      {/* Columns Dropdown and Second Dropdown */}
       <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
-        {/* Columns Dropdown */}
         <div style={{ flex: 1 }}>
           <label htmlFor="columns">Select a Column:</label>
           <select
@@ -168,8 +169,7 @@ function FileEnrichment() {
             ))}
           </select>
         </div>
-  
-        {/* Second Dropdown */}
+
         <div style={{ flex: 1 }}>
           <label htmlFor="secondDropdown">Second Dropdown:</label>
           <select
@@ -185,33 +185,34 @@ function FileEnrichment() {
           </select>
         </div>
       </div>
-  
-      {/* 4th Row - Submit Button */}
-      <div style={{ marginBottom: '20px' }}>
-        <button 
-          onClick={handlePostSubmit} 
-          style={{ padding: '10px 20px', backgroundColor: '#4CAF50', color: 'white', border: 'none', borderRadius: '5px', width: '100%' }}
+
+      {/* Buttons: Submit and Exit */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handlePostSubmit}
+          style={{ width: '45%' }}
+          disabled={isSubmitDisabled} // Disable until both dropdowns have values
         >
           Submit Choices
-        </button>
+        </Button>
+        
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={onClose}
+          style={{ width: '45%' }}
+        >
+          Exit Without Changes
+        </Button>
       </div>
-  
+
       {/* Error and Success Messages */}
-      {error && (
-        <div style={{ color: 'red', marginTop: '20px' }}>
-          <p>{error}</p>
-        </div>
-      )}
-      {successMessage && (
-        <div style={{ color: 'green', marginTop: '20px' }}>
-          <p>{successMessage}</p>
-        </div>
-      )}
+      {error && <div style={{ color: 'red', marginTop: '20px' }}>{error}</div>}
+      {successMessage && <div style={{ color: 'green', marginTop: '20px' }}>{successMessage}</div>}
     </div>
   );
-  
-  
-  
 }
 
 export default FileEnrichment;

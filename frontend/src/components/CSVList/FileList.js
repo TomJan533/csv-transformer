@@ -1,9 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { useNavigate } from 'react-router-dom';
+import { Button, Modal, Box } from '@mui/material';
+import FileEnrichment from '../../pages/FileEnrichment/FileEnrichment.js';
 
-const FileList = ({ csvFiles, handleFileClick }) => {
-  const navigate = useNavigate();
+const FileList = ({ csvFiles, handleFileClick, refreshFileList }) => {
+  const [isEnrichmentModalOpen, setIsEnrichmentModalOpen] = useState(false); // State to manage modal open/close
+  const [selectedFileId, setSelectedFileId] = useState(null); // Track selected file for enrichment
+
+  const openEnrichmentModal = (fileId) => {
+    setSelectedFileId(fileId);
+    setIsEnrichmentModalOpen(true);
+  };
+
+  const closeEnrichmentModal = () => {
+    setIsEnrichmentModalOpen(false);
+    setSelectedFileId(null);
+    refreshFileList();
+  };
+
+  const handleEnrichmentSuccess = () => {
+    // Refresh the file list after enrichment and close modal
+    refreshFileList();
+    closeEnrichmentModal();
+  };
 
   const fileColumns = [
     { field: 'file_name', headerName: 'File Name', width: 300 },
@@ -24,35 +43,29 @@ const FileList = ({ csvFiles, handleFileClick }) => {
       filterable: false,
       renderCell: (params) => (
         <div>
-          <button 
+          <Button 
             onClick={() => handleFileClick(params.id)}
             style={{
               marginRight: '10px',
               padding: '5px 10px',
               backgroundColor: '#1976d2',
               color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
             }}
           >
             View Content
-          </button>
+          </Button>
           
-          {/* Button for Navigation to Data Enrichment */}
-          <button
-            onClick={() => navigate(`/file-enrichment/${params.id}`)}
+          {/* Button to trigger Data Enrichment Modal */}
+          <Button
+            onClick={() => openEnrichmentModal(params.id)}
             style={{
               padding: '5px 10px',
               backgroundColor: '#f44336',
               color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
             }}
           >
             Data Enrichment
-          </button>
+          </Button>
         </div>
       ),
     },
@@ -65,15 +78,51 @@ const FileList = ({ csvFiles, handleFileClick }) => {
   }));
 
   return (
-    <div style={{ height: 400, width: '100%' }}>
-      <DataGrid
-        rows={fileRows}
-        columns={fileColumns}
-        onRowClick={(params) => {
-          handleFileClick(params.id);
-        }}
+    <>
+      <div style={{ height: 400, width: '100%' }}>
+        <DataGrid
+          rows={fileRows}
+          columns={fileColumns}
+          onRowClick={(params) => {
+            handleFileClick(params.id);
+          }}
+        />
+      </div>
+
+      {/* Modal for File Enrichment */}
+      <Modal
+  open={isEnrichmentModalOpen}
+  onClose={closeEnrichmentModal}
+  aria-labelledby="file-enrichment-modal"
+  aria-describedby="file-enrichment-modal-description"
+>
+  <Box
+    sx={{
+      position: 'absolute',
+      top: '50%',
+      left: '50%',
+      transform: 'translate(-50%, -50%)',
+      width: '80%',  // Make the modal box larger
+      maxHeight: '90vh',  // Ensure the modal content fits within the viewport
+      overflowY: 'auto',  // Add scrolling in case the content overflows
+      bgcolor: 'background.paper',
+      borderRadius: '10px',
+      boxShadow: 24,
+      p: 4,
+    }}
+  >
+    {selectedFileId && (
+      <FileEnrichment 
+        fileId={selectedFileId}
+        onClose={handleEnrichmentSuccess} 
+        refreshFileList={refreshFileList}  
       />
-    </div>
+    )}
+  </Box>
+      </Modal>
+
+
+    </>
   );
 };
 
