@@ -7,23 +7,25 @@ const FileList = ({ csvFiles, handleFileClick, refreshFileList }) => {
   const [isEnrichmentModalOpen, setIsEnrichmentModalOpen] = useState(false); // State to manage modal open/close
   const [selectedFileId, setSelectedFileId] = useState(null); // Track selected file for enrichment
 
+  // Function to open the modal and set the selected file ID
   const openEnrichmentModal = (fileId) => {
     setSelectedFileId(fileId);
     setIsEnrichmentModalOpen(true);
   };
 
+  // Function to close the modal and refresh the file list
   const closeEnrichmentModal = () => {
     setIsEnrichmentModalOpen(false);
     setSelectedFileId(null);
-    refreshFileList();
+    refreshFileList();  // Call the refresh function passed as a prop
   };
 
+  // Function to handle the success of enrichment and refresh the list
   const handleEnrichmentSuccess = () => {
-    // Refresh the file list after enrichment and close modal
-    refreshFileList();
-    closeEnrichmentModal();
+    closeEnrichmentModal();  // This will close the modal and refresh the list
   };
 
+  // Define columns for the DataGrid
   const fileColumns = [
     { field: 'file_name', headerName: 'File Name', width: 300 },
     {
@@ -43,6 +45,7 @@ const FileList = ({ csvFiles, handleFileClick, refreshFileList }) => {
       filterable: false,
       renderCell: (params) => (
         <div>
+          {/* Button to view the content of the selected file */}
           <Button 
             onClick={() => handleFileClick(params.id)}
             style={{
@@ -55,7 +58,7 @@ const FileList = ({ csvFiles, handleFileClick, refreshFileList }) => {
             View Content
           </Button>
           
-          {/* Button to trigger Data Enrichment Modal */}
+          {/* Button to open the modal for file enrichment */}
           <Button
             onClick={() => openEnrichmentModal(params.id)}
             style={{
@@ -71,6 +74,7 @@ const FileList = ({ csvFiles, handleFileClick, refreshFileList }) => {
     },
   ];
 
+  // Create rows for the DataGrid from csvFiles prop
   const fileRows = csvFiles.map((file) => ({
     id: file.id,
     file_name: file.file_name,
@@ -91,37 +95,35 @@ const FileList = ({ csvFiles, handleFileClick, refreshFileList }) => {
 
       {/* Modal for File Enrichment */}
       <Modal
-  open={isEnrichmentModalOpen}
-  onClose={closeEnrichmentModal}
-  aria-labelledby="file-enrichment-modal"
-  aria-describedby="file-enrichment-modal-description"
->
-  <Box
-    sx={{
-      position: 'absolute',
-      top: '50%',
-      left: '50%',
-      transform: 'translate(-50%, -50%)',
-      width: '80%',  // Make the modal box larger
-      maxHeight: '90vh',  // Ensure the modal content fits within the viewport
-      overflowY: 'auto',  // Add scrolling in case the content overflows
-      bgcolor: 'background.paper',
-      borderRadius: '10px',
-      boxShadow: 24,
-      p: 4,
-    }}
-  >
-    {selectedFileId && (
-      <FileEnrichment 
-        fileId={selectedFileId}
-        onClose={handleEnrichmentSuccess} 
-        refreshFileList={refreshFileList}  
-      />
-    )}
-  </Box>
+        open={isEnrichmentModalOpen}
+        onClose={closeEnrichmentModal}  // Close modal on click outside or pressing escape
+        aria-labelledby="file-enrichment-modal"
+        aria-describedby="file-enrichment-modal-description"
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '80%',  // Set the width of the modal
+            maxHeight: '90vh',  // Ensure modal fits in viewport
+            overflowY: 'auto',  // Enable scrolling if content overflows
+            bgcolor: 'background.paper',
+            borderRadius: '10px',
+            boxShadow: 24,
+            p: 4,
+          }}
+        >
+          {/* Render FileEnrichment component within the modal if a file is selected */}
+          {selectedFileId && (
+            <FileEnrichment 
+              fileId={selectedFileId} 
+              onClose={handleEnrichmentSuccess}  // Call this when enrichment is successful
+            />
+          )}
+        </Box>
       </Modal>
-
-
     </>
   );
 };

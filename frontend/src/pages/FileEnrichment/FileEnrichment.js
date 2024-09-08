@@ -12,7 +12,7 @@ const isValidUrl = (string) => {
   }
 };
 
-function FileEnrichment({ fileId, onClose }) {  // Accept `fileId` prop and `onClose` to handle closing modal
+function FileEnrichment({ fileId, onClose }) {
   const [columns, setColumns] = useState([]);
   const [selectedColumn, setSelectedColumn] = useState('');
   const [inputValue, setInputValue] = useState('');
@@ -21,9 +21,8 @@ function FileEnrichment({ fileId, onClose }) {  // Accept `fileId` prop and `onC
   const [responsePreview, setResponsePreview] = useState('');
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
-  const [isSubmitDisabled, setIsSubmitDisabled] = useState(true); // Add state to track submit button status
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
 
-  // Effect to check if both dropdowns are selected to enable submit button
   useEffect(() => {
     setIsSubmitDisabled(!(selectedColumn && secondDropdownValue));
   }, [selectedColumn, secondDropdownValue]);
@@ -114,7 +113,7 @@ function FileEnrichment({ fileId, onClose }) {  // Accept `fileId` prop and `onC
       .then(data => {
         setSuccessMessage(`Submission successful: ${JSON.stringify(data, null, 2)}`);
         setError('');
-        onClose();  // Close modal after submission
+        onClose();  // This triggers the close and refresh process
       })
       .catch(err => {
         setError(`Error submitting data: ${err.message}`);
@@ -124,7 +123,7 @@ function FileEnrichment({ fileId, onClose }) {  // Accept `fileId` prop and `onC
 
   return (
     <div>
-      {/* URL Selection */}
+      {/* UI for selecting data and previewing */}
       <div style={{ marginBottom: '20px' }}>
         <label htmlFor="input">Select Data Source URL:</label>
         <select
@@ -153,7 +152,7 @@ function FileEnrichment({ fileId, onClose }) {  // Accept `fileId` prop and `onC
         )}
       </div>
 
-      {/* Columns Dropdown and Second Dropdown */}
+      {/* Column and Second Dropdown */}
       <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
         <div style={{ flex: 1 }}>
           <label htmlFor="columns">Select a Column:</label>
@@ -186,14 +185,14 @@ function FileEnrichment({ fileId, onClose }) {  // Accept `fileId` prop and `onC
         </div>
       </div>
 
-      {/* Buttons: Submit and Exit */}
+      {/* Buttons */}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
         <Button
           variant="contained"
           color="primary"
           onClick={handlePostSubmit}
           style={{ width: '45%' }}
-          disabled={isSubmitDisabled} // Disable until both dropdowns have values
+          disabled={isSubmitDisabled} // Disable submit button if inputs are invalid
         >
           Submit Choices
         </Button>

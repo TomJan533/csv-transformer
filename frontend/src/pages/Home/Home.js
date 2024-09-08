@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import CSVUpload from '../../components/CSVUpload/CSVUpload.js';
+// import CSVUpload from '../../components/CSVUpload/CSVUpload.js';
 import CSVList from '../../components/CSVList/CSVList.js';
 import FileContent from '../../components/CSVList/FileContent.js';
 import DashboardLayout from '../../DashboardLayout.js';
@@ -16,9 +16,9 @@ function Home() {
     setTotalRows(totalRowsFromCSVList);
   };
 
-  const handleUploadSuccess = () => {
-    setListUpdateTrigger((prev) => !prev); // Toggle to trigger CSV list update
-  };
+  // const handleUploadSuccess = () => {
+  //   setListUpdateTrigger((prev) => !prev); // Toggle to trigger CSV list update
+  // };
 
   const refreshFileList = () => {
     setListUpdateTrigger((prev) => !prev); // Refresh CSV List when called
@@ -27,9 +27,9 @@ function Home() {
   return (
     <DashboardLayout>
       <div className="Home">
-        <div>
+        {/* <div>
           <CSVUpload onUploadSuccess={handleUploadSuccess} />
-        </div>
+        </div> */}
         <div>
           <CSVList onFileSelect={handleFileSelect} updateTrigger={listUpdateTrigger} refreshFileList={refreshFileList} />
         </div>

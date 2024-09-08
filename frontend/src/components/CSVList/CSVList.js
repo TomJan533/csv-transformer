@@ -3,7 +3,7 @@ import FileList from './FileList.js';
 import Loading from './Loading.js';
 import Error from './Error.js';
 
-const CSVList = ({ onFileSelect, updateTrigger }) => {
+const CSVList = ({ onFileSelect, updateTrigger, refreshFileList }) => {
   const [csvFiles, setCsvFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -45,6 +45,7 @@ const CSVList = ({ onFileSelect, updateTrigger }) => {
       <FileList 
         csvFiles={csvFiles} 
         handleFileClick={handleFileClick} 
+        refreshFileList={refreshFileList}  // Pass refreshFileList to FileList
       />
     </div>
   );
