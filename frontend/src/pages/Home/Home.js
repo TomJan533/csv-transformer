@@ -25,7 +25,7 @@ function Home() {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout onUploadSuccess={refreshFileList}>
       <div className="Home">
         {/* <div>
           <CSVUpload onUploadSuccess={handleUploadSuccess} />
