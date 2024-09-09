@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { Button, Modal, Box } from '@mui/material';
+import { Button, Modal, Box, Paper } from '@mui/material';
 import FileEnrichment from '../../pages/FileEnrichment/FileEnrichment.js';
 
 const FileList = ({ csvFiles, handleFileClick, refreshFileList }) => {
@@ -30,10 +30,10 @@ const FileList = ({ csvFiles, handleFileClick, refreshFileList }) => {
     { field: 'file_name', headerName: 'File Name', width: 300 },
     {
       field: 'created_at',
-      headerName: 'Uploaded At',
+      headerName: 'Last Updated',
       width: 200,
       valueGetter: (params) => {
-        const date = new Date(params.value);
+        const date = new Date(params);
         return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
       },
     },
@@ -83,15 +83,32 @@ const FileList = ({ csvFiles, handleFileClick, refreshFileList }) => {
 
   return (
     <>
-      <div style={{ height: 400, width: '100%' }}>
+      <Paper sx={{ height: 400, width: '100%' }}>
         <DataGrid
           rows={fileRows}
           columns={fileColumns}
           onRowClick={(params) => {
             handleFileClick(params.id);
           }}
+          pageSize={5}
+          // checkboxSelection
+          sx={{
+            border: 0, // Remove border
+            '& .MuiDataGrid-columnHeaders': {
+              backgroundColor: '#f0f0f0', // Column header background
+              fontWeight: 'bold', // Explicitly set bold text in headers
+            },
+            '& .MuiDataGrid-columnHeaderTitle': {
+              fontWeight: 'bold', // This ensures that the header text is bold
+            },
+            '& .MuiDataGrid-cell': {
+              padding: '10px', // Add padding inside cells
+              display: 'flex', // Flexbox for vertical centering
+              alignItems: 'center', // Vertically center the text
+            },
+          }}
         />
-      </div>
+      </Paper>
 
       {/* Modal for File Enrichment */}
       <Modal
