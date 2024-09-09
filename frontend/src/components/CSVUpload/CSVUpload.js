@@ -62,7 +62,6 @@ class CSVUpload extends Component {
         <VisuallyHiddenInput
           type="file"
           onChange={this.handleFileChange}
-          multiple
         />
       </Button>
     );
