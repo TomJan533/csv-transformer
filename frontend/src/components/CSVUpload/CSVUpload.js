@@ -1,49 +1,72 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
+import { styled } from '@mui/material/styles/index.js'; // Keep the .js for @mui/material
+import Button from '@mui/material/Button/index.js'; // Keep the .js for @mui/material
 
-const apiUrl = process.env.REACT_APP_API_URL;
+// Hidden input style
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
 
-const CSVUpload = ({ onUploadSuccess }) => { // Accept onUploadSuccess prop
-    const [message, setMessage] = useState('');
+class CSVUpload extends Component {
+  constructor(props) {
+    super(props);
+    this.handleFileChange = this.handleFileChange.bind(this);
+  }
 
-    const handleFileChange = async (e) => {
-        const selectedFile = e.target.files[0];
+  // Handle file change and upload logic
+  async handleFileChange(event) {
+    const selectedFile = event.target.files[0];
 
-        if (!selectedFile) {
-            return; // If no file is selected, return early
+    if (!selectedFile) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/upload-csv/`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        console.log('File uploaded successfully!');
+        if (this.props.onUploadSuccess) {
+          this.props.onUploadSuccess(); // Trigger parent callback to refresh file list
         }
+      } else {
+        const result = await response.json();
+        console.error('Upload failed:', result.error);
+      }
+    } catch (error) {
+      console.error('Error occurred during file upload:', error);
+    }
+  }
 
-        const formData = new FormData();
-        formData.append('file', selectedFile);
-
-        try {
-            const response = await fetch(`${apiUrl}/upload-csv/`, {
-                method: 'POST',
-                body: formData,
-            });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                setMessage('File uploaded successfully!');
-                onUploadSuccess(); // Trigger parent callback to refresh CSV list
-            } else {
-                setMessage(`Upload failed: ${result.error}`);
-            }
-        } catch (error) {
-            setMessage('An error occurred during upload.');
-        }
-    };
-
+  render() {
     return (
-        <div>
-            <input 
-                type="file" 
-                accept=".csv" 
-                onChange={handleFileChange}
-            />
-            {message && <p>{message}</p>}
-        </div>
+      <Button
+        component="label"
+        variant="contained"
+      >
+        Upload CSV files
+        <VisuallyHiddenInput
+          type="file"
+          onChange={this.handleFileChange}
+          multiple
+        />
+      </Button>
     );
-};
+  }
+}
 
 export default CSVUpload;

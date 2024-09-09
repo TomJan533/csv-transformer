@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-// import CSVUpload from '../../components/CSVUpload/CSVUpload.js';
 import CSVList from '../../components/CSVList/CSVList.js';
 import FileContent from '../../components/CSVList/FileContent.js';
 import DashboardLayout from '../../DashboardLayout.js';
+import CSVUpload from '../../components/CSVUpload/CSVUpload.js'; // Import CSVUpload component
 
 class Home extends Component {
   constructor(props) {
@@ -75,8 +75,7 @@ class Home extends Component {
         <div className="Home">
           {isFileListEmpty ? (
             <div>
-              <p>No files found.</p>
-              <button onClick={this.refreshFileList}>Refresh File List</button>
+              <CSVUpload onUploadSuccess={this.refreshFileList} /> {/* Render CSVUpload when file list is empty */}
             </div>
           ) : (
             <div>
