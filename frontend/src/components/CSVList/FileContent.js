@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
+import { Paper } from '@mui/material'; // Import Paper for styling
 
 class FileContent extends Component {
   constructor(props) {
@@ -64,34 +65,36 @@ class FileContent extends Component {
     const columns = this.generateColumns();
 
     return (
-      <div style={{ height: 400, width: '100%' }}>
-        <DataGrid
-          rows={data}
-          columns={columns}
-          paginationMode="server"
-          rowCount={rowCount}
-          getRowId={(row) => row.impression_id || row.id}
-          pagination
-          pageSizeOptions={[10, 25, 50, 100]}
-          onPaginationModelChange={this.handlePaginationChange}
-          paginationModel={paginationModel}
-          sx={{
-            border: 0, // Remove border
-            '& .MuiDataGrid-columnHeaders': {
-              backgroundColor: '#f0f0f0',
-              fontWeight: 'bold',
-            },
-            '& .MuiDataGrid-columnHeaderTitle': {
-              fontWeight: 'bold',
-            },
-            '& .MuiDataGrid-cell': {
-              padding: '10px',
-              display: 'flex',
-              alignItems: 'center',
-            },
-          }}
-        />
-      </div>
+      <Paper sx={{ p: 2, borderRadius: 2, elevation: 3 }}> {/* Paper wrapper for styling */}
+        <div style={{ height: 400, width: '100%' }}>
+          <DataGrid
+            rows={data}
+            columns={columns}
+            paginationMode="server"
+            rowCount={rowCount}
+            getRowId={(row) => row.impression_id || row.id}
+            pagination
+            pageSizeOptions={[10, 25, 50, 100]}
+            onPaginationModelChange={this.handlePaginationChange}
+            paginationModel={paginationModel}
+            sx={{
+              border: 0, // Remove border
+              '& .MuiDataGrid-columnHeaders': {
+                backgroundColor: '#f0f0f0',
+                fontWeight: 'bold',
+              },
+              '& .MuiDataGrid-columnHeaderTitle': {
+                fontWeight: 'bold',
+              },
+              '& .MuiDataGrid-cell': {
+                padding: '10px',
+                display: 'flex',
+                alignItems: 'center',
+              },
+            }}
+          />
+        </div>
+      </Paper>
     );
   }
 }

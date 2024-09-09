@@ -87,7 +87,7 @@ class Home extends Component {
             </div>
           )}
 
-          <div>
+          <div style={{ marginTop: '20px' }}> {/* Add margin to ensure no overlap */}
             {selectedFileId && selectedFileContent.length > 0 && (
               <FileContent
                 fetchPaginatedData={(page, pageSize) =>
