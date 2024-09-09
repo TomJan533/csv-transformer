@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
-import { styled } from '@mui/material/styles/index.js'; // Keep the .js for @mui/material
-import Button from '@mui/material/Button/index.js'; // Keep the .js for @mui/material
+import { styled } from '@mui/material/styles/index.js'; 
+import Button from '@mui/material/Button/index.js';
+import Box from '@mui/material/Box/index.js';
+import Typography from '@mui/material/Typography/index.js';
 
-// Hidden input style
+
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
@@ -23,7 +25,7 @@ class CSVUpload extends Component {
 
   // Handle file change and upload logic
   async handleFileChange(event) {
-    const selectedFile = event.target.files[0];
+    const selectedFile = event.target.files[0]; // Get the first file (only 1 allowed)
 
     if (!selectedFile) {
       return;
@@ -52,20 +54,49 @@ class CSVUpload extends Component {
     }
   }
 
-  render() {
-    return (
+ 
+
+render() {
+  return (
+    <Box
+      sx={{
+        height: '40vh',
+        display: 'flex',
+        flexDirection: 'column', // Stack text and button vertically
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#f0f0f0',
+        boxShadow: 'inset 3px 3px 3px rgba(0, 0, 0, 0.2)',
+        borderRadius: '8px',
+        padding: '20px',
+        textAlign: 'center', // Center the text
+      }}
+    >
+      {/* Enhanced Greeting Text */}
+      <Typography variant="h5" gutterBottom>
+        Welcome to the CSV Transformer Tool
+      </Typography>
+      <Typography variant="body1" gutterBottom>
+        Get started by uploading your impressions data to transform it effortlessly.
+      </Typography>
+      
+      {/* Upload Button */}
       <Button
         component="label"
         variant="contained"
+        sx={{ marginTop: '20px' }} // Add some margin to separate button from text
       >
-        Upload CSV files
+        Upload File
         <VisuallyHiddenInput
           type="file"
           onChange={this.handleFileChange}
+          accept=".csv"
         />
       </Button>
-    );
-  }
+    </Box>
+  );
+}
+
 }
 
 export default CSVUpload;
