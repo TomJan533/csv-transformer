@@ -17,23 +17,25 @@ help:  ## Show help
 
 format:  ## Run code formatters (black, isort)
 	@echo "Running black..."
-	poetry run black $(LINT_FILES)
+	cd backend && poetry run black $(LINT_FILES)
 	@echo "Running isort..."
-	poetry run isort $(LINT_FILES)
+	cd backend && poetry run isort $(LINT_FILES)
 
 lint:  ## Run linters (flake8)
 	@echo "Running flake8..."
-	poetry run flake8 $(LINT_FILES)
+	cd backend && poetry run flake8 $(LINT_FILES)
 
 test:  ## Run tests (pytest)
 	@echo "Running tests..."
-	poetry run pytest
+	cd backend && poetry run pytest
 
 all: format lint test  ## Run all checks: format, lint, and test
 
 setup:  ## Install dependencies and prepare the environment
 	@echo "Setting up the environment..."
-	poetry install
+	cd backend && poetry install
 	@echo "Installing pre-commit hooks..."
-	poetry run pre-commit install
+	cd backend && poetry run pre-commit install
+	@echo "Installing node modules"
+	cd frontend && npm install
 	@echo "Setup completed!"

@@ -79,7 +79,7 @@ export default function DashboardLayout({ children, onUploadSuccess }) { // onUp
         <AppBarStyled position="fixed">
           <Toolbar>
             <Typography variant="h6" noWrap>
-              Dashboard
+              CSV Transformer
             </Typography>
           </Toolbar>
         </AppBarStyled>
