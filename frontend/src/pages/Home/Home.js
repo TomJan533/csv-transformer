@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import CSVList from '../../components/CSVList/CSVList.js';
 import FileContent from '../../components/CSVList/FileContent.js';
 import DashboardLayout from '../../DashboardLayout.js';
-import CSVUpload from '../../components/CSVUpload/CSVUpload.js'; // Import CSVUpload component
+import CSVUpload from '../../components/CSVUpload/CSVUpload.js';
 
 class Home extends Component {
   constructor(props) {
@@ -16,12 +16,11 @@ class Home extends Component {
     };
   }
 
-  // Lifecycle method: called once when the component mounts
   componentDidMount() {
+    document.title = "Home - CSV Transformer";
     this.checkIfFileListIsEmpty(); // Initial check for file list emptiness
   }
 
-  // Lifecycle method: called whenever the component updates
   componentDidUpdate(prevProps, prevState) {
     if (
       prevState.selectedFileId !== this.state.selectedFileId ||
@@ -32,7 +31,6 @@ class Home extends Component {
     }
   }
 
-  // Check if the file list is empty
   checkIfFileListIsEmpty = async () => {
     try {
       const response = await fetch(`${process.env.REACT_APP_API_URL}/csv-files/`);
@@ -47,7 +45,6 @@ class Home extends Component {
     }
   };
 
-  // Handler for selecting a file
   handleFileSelect = (fileId, fileContent, totalRowsFromCSVList) => {
     this.setState({
       selectedFileId: fileId,
@@ -56,7 +53,6 @@ class Home extends Component {
     });
   };
 
-  // Refresh the CSV list and recheck if it's empty
   refreshFileList = async () => {
     // Toggle the list update trigger to force re-fetch
     this.setState((prevState) => ({
