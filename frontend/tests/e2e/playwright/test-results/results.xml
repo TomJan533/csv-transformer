@@ -1,0 +1,14 @@
+<testsuites id="" name="" tests="3" failures="0" skipped="0" errors="0" time="5.576847">
+<testsuite name="example.test.mjs" timestamp="2024-09-13T12:26:12.224Z" hostname="chromium" tests="1" failures="0" skipped="0" time="1.44" errors="0">
+<testcase name="homepage has title" classname="example.test.mjs" time="1.44">
+</testcase>
+</testsuite>
+<testsuite name="example.test.mjs" timestamp="2024-09-13T12:26:12.224Z" hostname="firefox" tests="1" failures="0" skipped="0" time="2.787" errors="0">
+<testcase name="homepage has title" classname="example.test.mjs" time="2.787">
+</testcase>
+</testsuite>
+<testsuite name="example.test.mjs" timestamp="2024-09-13T12:26:12.224Z" hostname="webkit" tests="1" failures="0" skipped="0" time="2.345" errors="0">
+<testcase name="homepage has title" classname="example.test.mjs" time="2.345">
+</testcase>
+</testsuite>
+</testsuites>

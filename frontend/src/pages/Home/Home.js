@@ -70,7 +70,7 @@ class Home extends Component {
       <DashboardLayout onUploadSuccess={this.refreshFileList}> {/* Pass refreshFileList to DashboardLayout */}
       {/* added for test purposes */}
       <div>
-      <h1>Welcome to the Home Page</h1>
+      <p>Welcome to the Home Page</p>
     </div>
         <div className="Home">
           {isFileListEmpty ? (

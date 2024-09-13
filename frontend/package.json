@@ -20,8 +20,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "jest",
-    "test:e2e": "playwright test",
+    "test": "jest  --config=./tests/unit/jest/jest.config.cjs",
+    "test:e2e": "playwright test --config=./tests/e2e/playwright/playwright.config.mjs",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -43,6 +43,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/plugin-transform-private-property-in-object": "^7.24.7",
     "@playwright/test": "^1.47.0",
     "@testing-library/jest-dom": "^5.17.0",
