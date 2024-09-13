@@ -88,7 +88,7 @@ export default function DashboardLayout({ children, onUploadSuccess }) { // onUp
           <Divider />
           <List>
             {/* Files section with Add button */}
-            <ListItem button onClick={() => navigate('/home')}>
+            <ListItem onClick={() => navigate('/home')}>
               <ListItemIcon><FilesIcon /></ListItemIcon>
               <ListItemText primary="Files" />
               <IconButton 
