@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import CSVList from '../../components/CSVList/CSVList.js';
 import FileContent from '../../components/CSVList/FileContent.js';
-import DashboardLayout from '../../DashboardLayout.js';
+import Layout from '../../components/Layout/Layout.js';
 import CSVUpload from '../../components/CSVUpload/CSVUpload.js';
 
 class Home extends Component {
@@ -67,7 +67,7 @@ class Home extends Component {
     const { selectedFileId, selectedFileContent, totalRows, listUpdateTrigger, isFileListEmpty } = this.state;
 
     return (
-      <DashboardLayout onUploadSuccess={this.refreshFileList}> {/* Pass refreshFileList to DashboardLayout */}
+      <Layout onUploadSuccess={this.refreshFileList}>
       {/* added for test purposes */}
       <div>
       <p>Welcome to the Home Page</p>
@@ -99,7 +99,7 @@ class Home extends Component {
             )}
           </div>
         </div>
-      </DashboardLayout>
+      </Layout>
     );
   }
 }

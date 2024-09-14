@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import DashboardLayout from '../../DashboardLayout.js';
+import Layout from '../../components/Layout/Layout.js';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -18,14 +18,14 @@ const HealthCheck = () => {
   }, []);
 
   return (
-    <DashboardLayout>
+    <Layout>
       <h1>Health Check Status</h1>
       {status ? (
         <pre>{JSON.stringify(status, null, 2)}</pre>
       ) : (
         <p>Loading...</p>
       )}
-      </DashboardLayout>
+      </Layout>
   );
 };
 
