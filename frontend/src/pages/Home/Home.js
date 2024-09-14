@@ -68,10 +68,6 @@ class Home extends Component {
 
     return (
       <Layout onUploadSuccess={this.refreshFileList}>
-      {/* added for test purposes */}
-      <div>
-      <p>Welcome to the Home Page</p>
-    </div>
         <div className="Home">
           {isFileListEmpty ? (
             <div>

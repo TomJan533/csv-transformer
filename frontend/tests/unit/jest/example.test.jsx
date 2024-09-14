@@ -21,6 +21,6 @@ test('renders Home page on default route "/"', async () => {
   });
   
   // Assert that the Home component is rendered
-  const homeElement = screen.getByText(/Welcome to the Home Page/i);
+  const homeElement = screen.getByText(/Settings/);
   expect(homeElement).toBeInTheDocument();
 });
