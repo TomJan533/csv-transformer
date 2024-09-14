@@ -6,7 +6,9 @@ from api.views import (
     CSVFileContentView,
     CSVFileListView,
     CSVUploadView,
+    GetKafkaMessageView,
     HealthCheckAPIView,
+    PublishMessageView,
 )
 
 urlpatterns = [
@@ -18,4 +20,6 @@ urlpatterns = [
         "api/csv-files/<int:pk>/", CSVFileContentView.as_view(), name="csv-file-content"
     ),
     path("api/csv-enrichment/", CSVEnrichmentView.as_view(), name="csv-enrichment"),
+    path("api/publish-message/", PublishMessageView.as_view(), name="publish-message"),
+    path("api/get-message/", GetKafkaMessageView.as_view(), name="get-message"),
 ]
