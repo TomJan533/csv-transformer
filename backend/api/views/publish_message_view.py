@@ -9,7 +9,7 @@ class PublishMessageView(APIView):
     def post(self, request):
         message = request.data.get("message", "")
         if message:
-            send_message("your_topic", message)
+            send_message("user_action_logs", message)
             return Response({"status": "Message sent"}, status=status.HTTP_200_OK)
         else:
             return Response(

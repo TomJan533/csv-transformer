@@ -8,6 +8,8 @@ from api.tasks import fetch_and_process_data
 
 logger = logging.getLogger(__name__)
 
+from api.utils.log_user_action import log_user_action
+
 
 class CSVEnrichmentView(APIView):
     def post(self, request, *args, **kwargs):
@@ -32,6 +34,8 @@ class CSVEnrichmentView(APIView):
         fetch_and_process_data.delay(
             file_id, selected_column, url, second_dropdown_value
         )
+
+        log_user_action("CSV Enrichment Request Processed and Queued")
 
         # Respond with success
         return Response(

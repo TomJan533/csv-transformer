@@ -45,7 +45,7 @@ services:
       - redis
 
   zookeeper:
-    image: bitnami/zookeeper:3.7
+    image: wurstmeister/zookeeper
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
     networks:
@@ -54,10 +54,11 @@ services:
       - "2181:2181"
 
   kafka:
-    image: bitnami/kafka:2.8
+    image: wurstmeister/kafka
     environment:
       - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
       - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_LISTENERS=PLAINTEXT://0.0.0.0:9092
       - KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT
       - KAFKA_BROKER_ID=1
       - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Layout from '../../components/Layout/Layout.js';
+import UserActionLogs from '../../components/UserActionLogs/UserActionLogs.js';
 
 const apiUrl = process.env.REACT_APP_API_URL;
 
@@ -25,7 +26,8 @@ const HealthCheck = () => {
       ) : (
         <p>Loading...</p>
       )}
-      </Layout>
+      <UserActionLogs />
+    </Layout>
   );
 };
 

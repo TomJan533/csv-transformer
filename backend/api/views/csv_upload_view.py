@@ -13,6 +13,8 @@ from api.serializers import CSVRecordSerializer
 
 logger = logging.getLogger(__name__)
 
+from api.utils.log_user_action import log_user_action
+
 
 class CSVUploadView(APIView):
 
@@ -81,6 +83,7 @@ class CSVUploadView(APIView):
                 {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+        log_user_action("CSV Uploaded")
         return Response({"records": records}, status=status.HTTP_201_CREATED)
 
     def calculate_hash(self, file):

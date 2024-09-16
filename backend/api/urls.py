@@ -9,6 +9,7 @@ from api.views import (
     GetKafkaMessageView,
     HealthCheckAPIView,
     PublishMessageView,
+    UserActionLogListView,
 )
 
 urlpatterns = [
@@ -22,4 +23,5 @@ urlpatterns = [
     path("api/csv-enrichment/", CSVEnrichmentView.as_view(), name="csv-enrichment"),
     path("api/publish-message/", PublishMessageView.as_view(), name="publish-message"),
     path("api/get-message/", GetKafkaMessageView.as_view(), name="get-message"),
+    path("api/logs/", UserActionLogListView.as_view(), name="user-action-logs"),
 ]
