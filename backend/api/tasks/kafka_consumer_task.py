@@ -2,7 +2,7 @@ import logging
 
 from celery import shared_task
 
-from api.kafka_utils.consumer import init_kafka_consumer_celery
+from api.kafka_utils.consumer import get_celery_consumer
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +13,8 @@ from api.models import UserActionLog
 
 @shared_task(bind=True)
 def run_kafka_consumer(self):
-    consumer = init_kafka_consumer_celery()
+    consumer_wrapper = get_celery_consumer()
+    consumer = consumer_wrapper.consume()
     while True:
         for message in consumer:
             log_data = message.value
