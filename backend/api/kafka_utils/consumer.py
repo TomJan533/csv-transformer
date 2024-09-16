@@ -4,8 +4,6 @@ import threading  # To avoid race conditions
 from django.conf import settings
 from kafka import KafkaConsumer
 
-from api.models import UserActionLog
-
 # Global consumer object
 _kafka_consumer = None
 _kafka_lock = threading.Lock()
@@ -41,16 +39,6 @@ def init_kafka_consumer_celery():
                     consumer_timeout_ms=5000,  # Set a timeout of 5 seconds
                 )
     return _kafka_consumer
-
-
-def consume_logs():
-    consumer = init_kafka_consumer_celery()
-    for message in consumer:
-        log_data = message.value
-        # user = User.objects.get(username=log_data['user'])  # TODO: add user in future
-        UserActionLog.objects.create(
-            action=log_data["action"], timestamp=log_data["timestamp"]
-        )
 
 
 def get_message():
