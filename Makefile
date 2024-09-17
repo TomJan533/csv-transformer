@@ -25,9 +25,13 @@ lint:  ## Run linters (flake8)
 	@echo "Running flake8..."
 	cd backend && poetry run flake8 $(LINT_FILES)
 
-test:  ## Run tests (pytest)
-	@echo "Running tests..."
-	cd backend && poetry run pytest
+test-unit:  ## Run tests (pytest)
+	@echo "Running backend unit tests..."
+	cd backend && poetry run pytest -m unit --ds=api.tests.settings.unit_test_settings
+
+test-integration:  ## Run tests (pytest)
+	@echo "Running backend integration tests..."
+	cd backend && poetry run pytest -m integration --ds=api.tests.settings.integration_test_settings
 
 all: format lint test  ## Run all checks: format, lint, and test
 
